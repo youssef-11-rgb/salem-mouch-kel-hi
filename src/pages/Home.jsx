@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Check, ArrowRight, Star, Zap, Shield, TrendingUp, Mail, Server, Code, Globe, Award, Upload, X, Info } from 'lucide-react';
+import { Check, ArrowRight, Star, Zap, Shield, TrendingUp, Mail, Server, Code, Globe, Award, Upload, X, Info, CheckCircle } from 'lucide-react';
 
 const Maple = ({ size = 24, className = "" }) => (
   <i className={`fab fa-canadian-maple-leaf ${className}`} style={{fontSize: size}}></i>
@@ -8,10 +8,14 @@ const Maple = ({ size = 24, className = "" }) => (
 const Home = () => {
   const [billingCycle, setBillingCycle] = useState('monthly');
   const [hoveredEmail, setHoveredEmail] = useState(null);
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const [formData, setFormData] = useState({
     businessName: '',
     businessType: '',
     email: '',
+    phone: '',
     hasDomain: null,
     needsLogoDesign: false
   });
@@ -31,32 +35,31 @@ const Home = () => {
     }));
   };
 
-  const handleFileUpload = (e) => {
-    const file = e.target.files[0];
-    if (file && file.size <= 5 * 1024 * 1024) {
-      setFormData(prev => ({
-        ...prev,
-        logoFile: file
-      }));
-    } else {
-      alert('File size must be under 5MB');
-    }
-  };
-
   const handleSubmit = () => {
-    if (!formData.businessName || !formData.businessType || !formData.email || formData.hasDomain === null) {
+    if (!formData.businessName || !formData.businessType || !formData.email || !formData.phone || formData.hasDomain === null) {
       alert('Please fill in all required fields');
       return;
     }
-    console.log('Form submitted:', formData);
-    alert('Thanks for your interest! We will contact you within 24 hours.');
-    setFormData({
-      businessName: '',
-      businessType: '',
-      email: '',
-      hasDomain: null,
-      needsLogoDesign: false
-    });
+
+    setIsSubmitting(true);
+    setTimeout(() => {
+      console.log('Form submitted:', formData);
+      setIsSubmitting(false);
+      setShowSuccessPopup(true);
+
+      setFormData({
+        businessName: '',
+        businessType: '',
+        email: '',
+        phone: '',
+        hasDomain: null,
+        needsLogoDesign: false
+      });
+
+      setTimeout(() => {
+        setShowSuccessPopup(false);
+      }, 5000);
+    }, 1500);
   };
 
   const plans = [
@@ -72,7 +75,7 @@ const Home = () => {
       emailAccounts: 3,
       features: [
         { name: 'Up to 5 pages', included: true },
-        { name: '3 Business email accounts (1GB each)', included: true, hasInfo: true },
+        { name: '3 Business email accounts', included: true, hasInfo: true },
         { name: 'Basic SEO optimization', included: true },
         { name: 'Mobile responsive design', included: true },
         { name: 'Contact form', included: true },
@@ -99,7 +102,7 @@ const Home = () => {
       emailAccounts: 10,
       features: [
         { name: 'Up to 10 pages', included: true },
-        { name: '10 Business email accounts (1GB each)', included: true, hasInfo: true },
+        { name: '10 Business email accounts', included: true, hasInfo: true },
         { name: 'Advanced SEO optimization', included: true },
         { name: 'Mobile responsive design', included: true },
         { name: 'Contact form with file uploads', included: true },
@@ -128,7 +131,7 @@ const Home = () => {
       emailAccounts: 'Unlimited',
       features: [
         { name: 'Unlimited pages', included: true },
-        { name: 'Unlimited Business email accounts (1GB each)', included: true, hasInfo: true },
+        { name: 'Unlimited Business email accounts', included: true, hasInfo: true },
         { name: 'Premium SEO optimization', included: true },
         { name: 'Mobile responsive design', included: true },
         { name: 'Advanced forms with logic', included: true },
@@ -144,7 +147,7 @@ const Home = () => {
       popular: false,
       color: 'green',
       savings: 60,
-      bestFor: 'E-commerce & professional services'
+      bestFor: 'E-commerce & professional services',
     }
   ];
 
@@ -161,10 +164,13 @@ const Home = () => {
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-50 via-white to-blue-50 relative overflow-hidden">
         <div className="absolute inset-0 opacity-5">
-          <div className="absolute inset-0" style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.1'%3E%3Cpath d='M30 30c0-16.569 13.431-30 30-30v60c-16.569 0-30-13.431-30-30z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-            backgroundSize: '60px 60px'
-          }}></div>
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.1'%3E%3Cpath d='M30 30c0-16.569 13.431-30 30-30v60c-16.569 0-30-13.431-30-30z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+              backgroundSize: '60px 60px' // <-- fixed
+            }}
+          ></div>
         </div>
 
         <div className="absolute top-20 right-10 opacity-10">
@@ -182,13 +188,14 @@ const Home = () => {
                   <Maple size={16} className="mr-2" />
                   Proudly Canadian - Supporting Local Businesses
                 </div>
-        
+
                 <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
                   Get 3X More Customers With Your New Website in Just <span className="text-blue-600">7 Days</span>
                 </h1>
-                
+
                 <p className="text-xl text-gray-600 mb-8">
-                  Complete done-for-you service starting at just <span className="font-bold text-gray-900">$2.64/day</span>. We build, host, and manage everything - you focus on your business.
+                  Complete done-for-you service starting at just <span className="font-bold text-gray-900">$2.64/day</span>.
+                  We build, host, and manage everything - you focus on your business.
                 </p>
 
                 <div className="grid grid-cols-3 gap-6 mb-8">
@@ -330,21 +337,13 @@ const Home = () => {
             <div className="relative bg-white rounded-full p-1 flex shadow-lg border-2 border-gray-200">
               <button
                 onClick={() => setBillingCycle('monthly')}
-                className={`${
-                  billingCycle === 'monthly'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-transparent text-gray-700'
-                } relative w-32 rounded-full py-3 text-sm font-bold transition-all duration-300`}
+                className={`${billingCycle === 'monthly' ? 'bg-blue-600 text-white' : 'bg-transparent text-gray-700'} relative w-32 rounded-full py-3 text-sm font-bold transition-all duration-300`}
               >
                 Monthly
               </button>
               <button
                 onClick={() => setBillingCycle('yearly')}
-                className={`${
-                  billingCycle === 'yearly'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-transparent text-gray-700'
-                } relative w-32 rounded-full py-3 text-sm font-bold transition-all duration-300`}
+                className={`${billingCycle === 'yearly' ? 'bg-blue-600 text-white' : 'bg-transparent text-gray-700'} relative w-32 rounded-full py-3 text-sm font-bold transition-all duration-300`}
               >
                 Yearly
                 <span className="absolute -top-3 -right-3 bg-green-500 text-white text-xs px-2 py-1 rounded-full font-bold shadow-lg">
@@ -356,18 +355,16 @@ const Home = () => {
 
           <div className="mt-12 grid gap-8 lg:grid-cols-3">
             {plans.map((plan) => (
-              <div 
+              <div
                 key={plan.id}
-                className={`relative overflow-hidden bg-white rounded-2xl shadow-xl border-2 transition-all duration-300 hover:scale-105 ${
-                  plan.popular ? 'border-purple-500 shadow-2xl' : 'border-gray-200'
-                }`}
+                className={`relative overflow-hidden bg-white rounded-2xl shadow-xl border-2 transition-all duration-300 hover:scale-105 ${plan.popular ? 'border-purple-500 shadow-2xl' : 'border-gray-200'}`}
               >
                 {plan.popular && (
                   <div className="absolute top-0 right-0 bg-gradient-to-r from-purple-600 to-purple-700 text-white text-xs font-bold uppercase px-4 py-2 rounded-bl-xl shadow-lg">
                     ⭐ Most Popular
                   </div>
                 )}
-                
+
                 <div className="p-6">
                   <div className="mb-6">
                     <h3 className={`text-2xl font-bold mb-2 ${plan.popular ? 'text-purple-600' : 'text-gray-900'}`}>
@@ -375,7 +372,7 @@ const Home = () => {
                     </h3>
                     <p className="text-gray-600 text-sm mb-2">{plan.description}</p>
                     <p className="text-xs text-blue-600 font-semibold mb-3">✓ Best for: {plan.bestFor}</p>
-                    
+
                     <div className="flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-lg px-3 py-2">
                       <Mail className="text-blue-600 flex-shrink-0" size={16} />
                       <span className="text-sm font-bold text-gray-900">
@@ -383,7 +380,7 @@ const Home = () => {
                       </span>
                     </div>
                   </div>
-                  
+
                   <div className="mb-6">
                     <div className="flex items-baseline justify-center mb-2">
                       <span className="text-2xl text-gray-400 line-through mr-2">
@@ -412,22 +409,22 @@ const Home = () => {
                       </div>
                     )}
                   </div>
-                  
+
                   <div className="mb-6 bg-gradient-to-r from-green-50 to-blue-50 border-2 border-green-200 rounded-xl px-4 py-3">
                     <p className="text-xs text-center font-bold text-gray-800">
                       ✓ $0 Setup Fee • 30-Day Money-Back • Cancel Anytime
                     </p>
                   </div>
 
-                  <button 
+                  <button
                     onClick={() => {
-                      document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
+                      const el = document.getElementById('contact');
+                      if (el) el.scrollIntoView({ behavior: 'smooth' });
                     }}
-                    className={`w-full py-3 px-6 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center group mb-6 ${
-                      plan.popular
+                    className={`w-full py-3 px-6 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center group mb-6 ${plan.popular
                         ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white hover:from-purple-700 hover:to-purple-800'
                         : 'bg-gradient-to-r from-gray-800 to-gray-900 text-white hover:from-gray-900 hover:to-black'
-                    }`}
+                      }`}
                   >
                     Get Started Now
                     <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" size={20} />
@@ -447,18 +444,18 @@ const Home = () => {
                             {feature.name}
                           </span>
                           {feature.hasInfo && (
-                            <div 
-                              className="relative ml-1"
+                            <div
+                              className="relative ml-1 group"
                               onMouseEnter={() => setHoveredEmail(`${plan.id}-${idx}`)}
                               onMouseLeave={() => setHoveredEmail(null)}
                             >
                               <Info className="text-blue-600 cursor-help flex-shrink-0" size={14} />
                               {hoveredEmail === `${plan.id}-${idx}` && (
-                                <div className="absolute left-0 bottom-full mb-2 w-56 bg-gray-900 text-white text-xs rounded-lg px-3 py-2 shadow-xl z-10">
+                                <div className="fixed ml-4 w-64 bg-gray-900 text-white text-xs rounded-lg px-4 py-3 shadow-2xl z-50 border border-gray-700">
                                   <div className="font-semibold mb-1">📧 Email Storage: 1GB per account</div>
                                   <div className="text-gray-300">Need more storage? Contact us for custom pricing.</div>
-                                  <div className="absolute top-full left-4 -mt-1">
-                                    <div className="border-4 border-transparent border-t-gray-900"></div>
+                                  <div className="absolute -left-2 top-3">
+                                    <div className="border-8 border-transparent border-r-gray-900"></div>
                                   </div>
                                 </div>
                               )}
@@ -472,6 +469,7 @@ const Home = () => {
               </div>
             ))}
           </div>
+
         </div>
       </section>
 
@@ -620,7 +618,9 @@ const Home = () => {
                 location: 'Toronto, ON',
                 initial: 'SC',
                 color: 'blue',
-                text: "NorthSites transformed our coffee shop's online presence. We went from no online presence to a professional website in just 7 days. Our bookings increased by 300%!",
+                text: `NorthSites transformed our coffee shop's online presence.
+We went from no online presence to a professional website in just 7 days.
+Our bookings increased by 300%!`,
                 metric: '+300% bookings in 30 days'
               },
               {
@@ -629,7 +629,8 @@ const Home = () => {
                 location: 'Vancouver, BC',
                 initial: 'MP',
                 color: 'green',
-                text: "Finally, a web service that understands Canadian businesses. The Canadian hosting and support made all the difference. Our site loads fast and we get local support when we need it.",
+                text: `Finally, a web service that understands Canadian businesses.
+The Canadian hosting and support made all the difference. Our site loads fast and we get local support when we need it.`,
                 metric: '2.1s load time, 99.9% uptime'
               },
               {
@@ -638,7 +639,9 @@ const Home = () => {
                 location: 'Calgary, AB',
                 initial: 'LM',
                 color: 'purple',
-                text: "The best investment we've made for our salon. Professional design, easy to manage, and the email setup was seamless. Our clients love booking online now.",
+                text: `The best investment we've made for our salon.
+Professional design, easy to manage, and the email setup was seamless.
+Our clients love booking online now.`,
                 metric: '5x more online bookings'
               }
             ].map((testimonial, idx) => (
@@ -714,7 +717,7 @@ const Home = () => {
                     <td className="px-6 py-4 text-center text-sm text-gray-600">$0 - $500</td>
                     <td className="px-6 py-4 text-center text-sm text-gray-600">$500 - $3,000</td>
                   </tr>
-                  
+
                   <tr className="bg-gray-50">
                     <td className="px-6 py-4 text-sm font-medium text-gray-900">Monthly Cost</td>
                     <td className="px-6 py-4 text-center text-sm text-green-600 font-semibold">$79 - $149</td>
@@ -722,7 +725,7 @@ const Home = () => {
                     <td className="px-6 py-4 text-center text-sm text-gray-600">$20 - $50</td>
                     <td className="px-6 py-4 text-center text-sm text-gray-600">$100 - $300</td>
                   </tr>
-                  
+
                   <tr>
                     <td className="px-6 py-4 text-sm font-medium text-gray-900">Time to Launch</td>
                     <td className="px-6 py-4 text-center text-sm text-green-600 font-semibold">7 Days</td>
@@ -730,7 +733,7 @@ const Home = () => {
                     <td className="px-6 py-4 text-center text-sm text-gray-600">1-4 weeks</td>
                     <td className="px-6 py-4 text-center text-sm text-gray-600">2-8 weeks</td>
                   </tr>
-                  
+
                   <tr className="bg-gray-50">
                     <td className="px-6 py-4 text-sm font-medium text-gray-900">Professional Design</td>
                     <td className="px-6 py-4 text-center text-sm text-green-600 font-semibold">✓ Included</td>
@@ -738,7 +741,7 @@ const Home = () => {
                     <td className="px-6 py-4 text-center text-sm text-red-600">✗ Templates only</td>
                     <td className="px-6 py-4 text-center text-sm text-yellow-600">~ Varies</td>
                   </tr>
-                  
+
                   <tr>
                     <td className="px-6 py-4 text-sm font-medium text-gray-900">Hosting Included</td>
                     <td className="px-6 py-4 text-center text-sm text-green-600 font-semibold">✓ Premium</td>
@@ -746,7 +749,7 @@ const Home = () => {
                     <td className="px-6 py-4 text-center text-sm text-yellow-600">~ Basic</td>
                     <td className="px-6 py-4 text-center text-sm text-red-600">✗ Extra cost</td>
                   </tr>
-                  
+
                   <tr className="bg-gray-50">
                     <td className="px-6 py-4 text-sm font-medium text-gray-900">Business Email</td>
                     <td className="px-6 py-4 text-center text-sm text-green-600 font-semibold">✓ Included</td>
@@ -754,7 +757,7 @@ const Home = () => {
                     <td className="px-6 py-4 text-center text-sm text-red-600">✗ Extra cost</td>
                     <td className="px-6 py-4 text-center text-sm text-red-600">✗ Extra cost</td>
                   </tr>
-                  
+
                   <tr>
                     <td className="px-6 py-4 text-sm font-medium text-gray-900">Ongoing Support</td>
                     <td className="px-6 py-4 text-center text-sm text-green-600 font-semibold">✓ 24/7 Canadian</td>
@@ -762,7 +765,7 @@ const Home = () => {
                     <td className="px-6 py-4 text-center text-sm text-red-600">✗ Self-service</td>
                     <td className="px-6 py-4 text-center text-sm text-yellow-600">~ Limited</td>
                   </tr>
-                  
+
                   <tr className="bg-gray-50">
                     <td className="px-6 py-4 text-sm font-medium text-gray-900">Updates & Maintenance</td>
                     <td className="px-6 py-4 text-center text-sm text-green-600 font-semibold">✓ Included</td>
@@ -770,15 +773,15 @@ const Home = () => {
                     <td className="px-6 py-4 text-center text-sm text-red-600">✗ You do it</td>
                     <td className="px-6 py-4 text-center text-sm text-red-600">✗ Extra cost</td>
                   </tr>
-                  
-                  <tr>
-                    <td className="px-6 py-4 text-sm font-medium text-gray-900">Canadian Hosting</td>
-                    <td className="px-6 py-4 text-center text-sm text-green-600 font-semibold">✓ Yes</td>
-                    <td className="px-6 py-4 text-center text-sm text-yellow-600">~ Sometimes</td>
-                    <td className="px-6 py-4 text-center text-sm text-red-600">✗ Usually US</td>
-                    <td className="px-6 py-4 text-center text-sm text-yellow-600">~ Varies</td>
-                  </tr>
-                  
+
+                    <tr>
+                      <td className="px-6 py-4 text-sm font-medium text-gray-900">Canadian Hosting</td>
+                      <td className="px-6 py-4 text-center text-sm text-green-600 font-semibold">✓ Yes</td>
+                      <td className="px-6 py-4 text-center text-sm text-yellow-600">~ Sometimes</td>
+                      <td className="px-6 py-4 text-center text-sm text-red-600">✗ Usually US</td>
+                      <td className="px-6 py-4 text-center text-sm text-yellow-600">~ Varies</td>
+                    </tr>
+
                   <tr className="bg-gray-50">
                     <td className="px-6 py-4 text-sm font-medium text-gray-900">SEO Optimization</td>
                     <td className="px-6 py-4 text-center text-sm text-green-600 font-semibold">✓ Included</td>
@@ -820,7 +823,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Contact Section */}
+      {/* CONTACT FORM */}
       <section id="contact" className="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-blue-600 to-blue-800 text-white relative overflow-hidden">
         <div className="absolute top-0 left-0 opacity-10">
           <Maple size={300} className="text-white" />
@@ -866,7 +869,23 @@ const Home = () => {
 
               <div>
                 <label className="block text-sm font-semibold mb-2 text-gray-700">
-                  What type of website do you need? <span className="text-red-500">*</span>
+                  Phone Number <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  placeholder="(555) 123-4567"
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition"
+                />
+                <p className="text-xs text-gray-500 mt-1">We'll send you updates via SMS</p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-semibold mb-2 text-gray-700">
+                  What type of website do you need?
+                  <span className="text-red-500">*</span>
                 </label>
                 <textarea
                   name="businessType"
@@ -880,17 +899,14 @@ const Home = () => {
 
               <div>
                 <label className="block text-sm font-semibold mb-4 text-gray-700">
-                  Do you have a domain name? <span className="text-red-500">*</span>
+                  Do you have a domain name?
+                  <span className="text-red-500">*</span>
                 </label>
                 <div className="grid md:grid-cols-2 gap-4">
                   <button
                     type="button"
                     onClick={() => handleDomainChoice(false)}
-                    className={`p-6 rounded-lg border-2 transition-all ${
-                      formData.hasDomain === false
-                        ? 'border-blue-600 bg-blue-50'
-                        : 'border-gray-300 bg-white hover:border-blue-400'
-                    }`}
+                    className={`p-6 rounded-lg border-2 transition-all ${formData.hasDomain === false ? 'border-blue-600 bg-blue-50' : 'border-gray-300 bg-white hover:border-blue-400'}`}
                   >
                     <div className="font-semibold text-lg mb-1 text-gray-900">No, help me register</div>
                     <div className="text-sm text-gray-600">We'll set it up for you</div>
@@ -898,11 +914,7 @@ const Home = () => {
                   <button
                     type="button"
                     onClick={() => handleDomainChoice(true)}
-                    className={`p-6 rounded-lg border-2 transition-all ${
-                      formData.hasDomain === true
-                        ? 'border-blue-600 bg-blue-50'
-                        : 'border-gray-300 bg-white hover:border-blue-400'
-                    }`}
+                    className={`p-6 rounded-lg border-2 transition-all ${formData.hasDomain === true ? 'border-blue-600 bg-blue-50' : 'border-gray-300 bg-white hover:border-blue-400'}`}
                   >
                     <div className="font-semibold text-lg mb-1 text-gray-900">Yes, I have one</div>
                     <div className="text-sm text-gray-600">I'll transfer it</div>
@@ -920,11 +932,13 @@ const Home = () => {
                       </div>
                     ))}
                   </div>
+
                   <div className="text-left">
                     <div className="font-bold text-gray-900">127 businesses joined in 2024</div>
                     <div className="text-sm text-gray-600">3 spots left this month</div>
                   </div>
                 </div>
+
                 <div className="flex items-center justify-center gap-6 text-sm text-gray-700">
                   <div className="flex items-center gap-1">
                     <Check className="text-green-600" size={16} />
@@ -944,9 +958,20 @@ const Home = () => {
               <button
                 type="button"
                 onClick={handleSubmit}
-                className="w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-4 rounded-lg font-bold text-lg hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg transform hover:scale-105"
+                disabled={isSubmitting}
+                className={`w-full bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-4 rounded-lg font-bold text-lg hover:from-blue-700 hover:to-blue-800 transition-all shadow-lg transform hover:scale-105 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
-                Get My Free Quote Now →
+                {isSubmitting ? (
+                  <span className="flex items-center justify-center">
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Submitting...
+                  </span>
+                ) : (
+                  'Get My Free Quote Now →'
+                )}
               </button>
 
               <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
@@ -955,14 +980,16 @@ const Home = () => {
                   <div>
                     <div className="font-bold text-gray-900 mb-1">30-Day Money-Back Guarantee</div>
                     <p className="text-sm text-gray-600">
-                      Not satisfied? Get a full refund within 30 days, no questions asked. We're that confident you'll love your new website.
+                      Not satisfied? Get a full refund within 30 days, no questions asked.
+                      We're that confident you'll love your new website.
                     </p>
                   </div>
                 </div>
               </div>
 
               <p className="text-xs text-gray-500 text-center">
-                By submitting, you agree to receive emails from NorthSites. Unsubscribe anytime. 🇨🇦 Proudly Canadian
+                By submitting, you agree to receive emails from NorthSites.
+                Unsubscribe anytime. 🇨🇦 Proudly Canadian
               </p>
             </div>
           </div>
@@ -975,6 +1002,31 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      {/* SUCCESS POPUP */}
+      {showSuccessPopup && (
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl p-8 md:p-12 max-w-lg w-full text-center relative">
+            <button
+              onClick={() => setShowSuccessPopup(false)}
+              className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
+            >
+              <X size={24} />
+            </button>
+            <CheckCircle className="text-green-500 w-20 h-20 mx-auto mb-6" />
+            <h3 className="text-3xl font-bold text-gray-900 mb-4">Success!</h3>
+            <p className="text-lg text-gray-600 mb-8">
+              Your consultation request has been sent. We will get back to you within 24 hours.
+            </p>
+            <button
+              onClick={() => setShowSuccessPopup(false)}
+              className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-all duration-300"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
