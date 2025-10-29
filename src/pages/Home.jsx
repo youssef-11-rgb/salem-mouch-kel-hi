@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Check, ArrowRight, Star, Zap, Shield, TrendingUp, Mail, Server, Code, Globe, Award, Upload, X } from 'lucide-react';
+import { Check, ArrowRight, Star, Zap, Shield, TrendingUp, Mail, Server, Code, Globe, Award, Upload, X, Info } from 'lucide-react';
 
 const Maple = ({ size = 24, className = "" }) => (
   <i className={`fab fa-canadian-maple-leaf ${className}`} style={{fontSize: size}}></i>
@@ -7,6 +7,7 @@ const Maple = ({ size = 24, className = "" }) => (
 
 const Home = () => {
   const [billingCycle, setBillingCycle] = useState('monthly');
+  const [hoveredEmail, setHoveredEmail] = useState(null);
   const [formData, setFormData] = useState({
     businessName: '',
     businessType: '',
@@ -68,8 +69,10 @@ const Home = () => {
       regularYearly: 1020,
       setupFee: 0,
       description: 'Perfect for small businesses and startups',
+      emailAccounts: 3,
       features: [
         { name: 'Up to 5 pages', included: true },
+        { name: '3 Business email accounts (1GB each)', included: true, hasInfo: true },
         { name: 'Basic SEO optimization', included: true },
         { name: 'Mobile responsive design', included: true },
         { name: 'Contact form', included: true },
@@ -81,7 +84,8 @@ const Home = () => {
       ],
       popular: false,
       color: 'blue',
-      savings: 20
+      savings: 20,
+      bestFor: 'Local shops & service providers'
     },
     {
       id: 'professional',
@@ -92,8 +96,10 @@ const Home = () => {
       regularYearly: 2040,
       setupFee: 0,
       description: 'Ideal for growing businesses with more needs',
+      emailAccounts: 10,
       features: [
         { name: 'Up to 10 pages', included: true },
+        { name: '10 Business email accounts (1GB each)', included: true, hasInfo: true },
         { name: 'Advanced SEO optimization', included: true },
         { name: 'Mobile responsive design', included: true },
         { name: 'Contact form with file uploads', included: true },
@@ -107,7 +113,8 @@ const Home = () => {
       ],
       popular: true,
       color: 'purple',
-      savings: 50
+      savings: 50,
+      bestFor: 'Restaurants, salons & retail stores'
     },
     {
       id: 'enterprise',
@@ -118,8 +125,10 @@ const Home = () => {
       regularYearly: 2580,
       setupFee: 0,
       description: 'For established businesses requiring advanced solutions',
+      emailAccounts: 'Unlimited',
       features: [
         { name: 'Unlimited pages', included: true },
+        { name: 'Unlimited Business email accounts (1GB each)', included: true, hasInfo: true },
         { name: 'Premium SEO optimization', included: true },
         { name: 'Mobile responsive design', included: true },
         { name: 'Advanced forms with logic', included: true },
@@ -134,7 +143,8 @@ const Home = () => {
       ],
       popular: false,
       color: 'green',
-      savings: 60
+      savings: 60,
+      bestFor: 'E-commerce & professional services'
     }
   ];
 
@@ -302,24 +312,29 @@ const Home = () => {
       {/* Pricing Section */}
       <section id="pricing" className="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center">
+          <div className="text-center mb-8">
             <h2 className="text-4xl font-extrabold text-gray-900 sm:text-5xl mb-4">
               Choose Your Perfect Plan
             </h2>
-            <p className="mt-4 max-w-2xl mx-auto text-lg text-gray-600">
-              All plans include hosting, email, SSL, and our 30-day money-back guarantee
+            <p className="mt-4 max-w-2xl mx-auto text-lg text-gray-600 mb-4">
+              <span className="font-bold text-gray-900">Everything in one place:</span> We build your website, host it on premium Canadian servers, set up your professional business email, and provide ongoing support.
             </p>
+            <div className="inline-flex items-center bg-gradient-to-r from-blue-100 to-purple-100 border-2 border-blue-300 px-6 py-3 rounded-xl">
+              <Shield className="text-blue-600 mr-2" size={20} />
+              <span className="font-bold text-gray-900">Website + Hosting + Business Email =</span>
+              <span className="ml-2 text-blue-600 font-bold">One Simple Price</span>
+            </div>
           </div>
 
           <div className="mt-12 flex justify-center">
-            <div className="relative bg-white rounded-full p-1 flex shadow-sm">
+            <div className="relative bg-white rounded-full p-1 flex shadow-lg border-2 border-gray-200">
               <button
                 onClick={() => setBillingCycle('monthly')}
                 className={`${
                   billingCycle === 'monthly'
                     ? 'bg-blue-600 text-white'
                     : 'bg-transparent text-gray-700'
-                } relative w-32 rounded-full py-2 text-sm font-medium transition-colors duration-300`}
+                } relative w-32 rounded-full py-3 text-sm font-bold transition-all duration-300`}
               >
                 Monthly
               </button>
@@ -329,10 +344,10 @@ const Home = () => {
                   billingCycle === 'yearly'
                     ? 'bg-blue-600 text-white'
                     : 'bg-transparent text-gray-700'
-                } relative w-32 rounded-full py-2 text-sm font-medium transition-colors duration-300`}
+                } relative w-32 rounded-full py-3 text-sm font-bold transition-all duration-300`}
               >
                 Yearly
-                <span className="absolute -top-2 -right-2 bg-green-500 text-white text-xs px-2 py-0.5 rounded-full">
+                <span className="absolute -top-3 -right-3 bg-green-500 text-white text-xs px-2 py-1 rounded-full font-bold shadow-lg">
                   Save 15%
                 </span>
               </button>
@@ -343,40 +358,64 @@ const Home = () => {
             {plans.map((plan) => (
               <div 
                 key={plan.id}
-                className={`relative overflow-hidden bg-white rounded-xl shadow-lg border ${
-                  plan.popular ? 'border-2 border-purple-500' : 'border-gray-200'
+                className={`relative overflow-hidden bg-white rounded-2xl shadow-xl border-2 transition-all duration-300 hover:scale-105 ${
+                  plan.popular ? 'border-purple-500 shadow-2xl' : 'border-gray-200'
                 }`}
               >
                 {plan.popular && (
-                  <div className="absolute top-0 right-0 bg-purple-600 text-white text-xs font-bold uppercase px-3 py-1 rounded-bl-lg shadow-lg">
-                    Most Popular
+                  <div className="absolute top-0 right-0 bg-gradient-to-r from-purple-600 to-purple-700 text-white text-xs font-bold uppercase px-4 py-2 rounded-bl-xl shadow-lg">
+                    ⭐ Most Popular
                   </div>
                 )}
                 
                 <div className="p-6">
-                  <h3 className={`text-2xl font-bold ${plan.popular ? 'text-purple-600' : 'text-gray-900'}`}>{plan.name}</h3>
-                  <p className="text-gray-500 mt-2 h-12">{plan.description}</p>
-                  
-                  <div className="mt-4">
-                    <div className="flex items-baseline justify-center mb-1">
-                      <span className="text-2xl text-gray-400 line-through mr-2">${billingCycle === 'monthly' ? plan.regularMonthly : plan.regularYearly}</span>
-                      <span className="text-sm text-green-600 font-semibold">Save ${plan.savings}/mo</span>
+                  <div className="mb-6">
+                    <h3 className={`text-2xl font-bold mb-2 ${plan.popular ? 'text-purple-600' : 'text-gray-900'}`}>
+                      {plan.name}
+                    </h3>
+                    <p className="text-gray-600 text-sm mb-2">{plan.description}</p>
+                    <p className="text-xs text-blue-600 font-semibold mb-3">✓ Best for: {plan.bestFor}</p>
+                    
+                    <div className="flex items-center gap-2 bg-blue-50 border border-blue-200 rounded-lg px-3 py-2">
+                      <Mail className="text-blue-600 flex-shrink-0" size={16} />
+                      <span className="text-sm font-bold text-gray-900">
+                        {typeof plan.emailAccounts === 'number' ? plan.emailAccounts : plan.emailAccounts} Business Email{typeof plan.emailAccounts === 'number' && plan.emailAccounts > 1 ? 's' : ''}
+                      </span>
                     </div>
-                    <div>
-                      <span className="text-4xl font-bold text-gray-900">${getPrice(plan)}</span>
-                      <span className="text-gray-500 ml-1">/{billingCycle === 'monthly' ? 'month' : 'year'}</span>
-                    </div>
-                    {billingCycle === 'monthly' && (
-                      <div className="text-sm text-gray-600 mt-1">
-                        Just ${(getPrice(plan) / 30).toFixed(2)}/day
-                      </div>
-                    )}
-                    {billingCycle === 'yearly' && <span className="text-sm text-green-600 font-semibold">(Save ${getSavings(plan)}/year)</span>}
                   </div>
                   
-                  <div className="mt-2 bg-green-50 border border-green-200 rounded-lg px-3 py-2">
-                    <p className="text-xs text-green-700 font-semibold text-center">
-                      ✓ No setup fees • 30-day money-back guarantee
+                  <div className="mb-6">
+                    <div className="flex items-baseline justify-center mb-2">
+                      <span className="text-2xl text-gray-400 line-through mr-2">
+                        ${billingCycle === 'monthly' ? plan.regularMonthly : plan.regularYearly}
+                      </span>
+                      <span className="text-sm text-green-600 font-bold bg-green-50 px-2 py-1 rounded">
+                        Save ${plan.savings}/mo
+                      </span>
+                    </div>
+                    <div className="text-center">
+                      <span className="text-4xl font-extrabold text-gray-900">
+                        ${getPrice(plan)}
+                      </span>
+                      <span className="text-gray-600 text-lg ml-2">
+                        /{billingCycle === 'monthly' ? 'month' : 'year'}
+                      </span>
+                    </div>
+                    {billingCycle === 'monthly' && (
+                      <div className="text-center text-sm text-gray-600 mt-2">
+                        Just ${(getPrice(plan) / 30).toFixed(2)}/day ☕
+                      </div>
+                    )}
+                    {billingCycle === 'yearly' && (
+                      <div className="text-center text-sm text-green-600 font-bold mt-2">
+                        💰 Save ${getSavings(plan)} per year!
+                      </div>
+                    )}
+                  </div>
+                  
+                  <div className="mb-6 bg-gradient-to-r from-green-50 to-blue-50 border-2 border-green-200 rounded-xl px-4 py-3">
+                    <p className="text-xs text-center font-bold text-gray-800">
+                      ✓ $0 Setup Fee • 30-Day Money-Back • Cancel Anytime
                     </p>
                   </div>
 
@@ -384,17 +423,18 @@ const Home = () => {
                     onClick={() => {
                       document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
                     }}
-                    className={`mt-6 w-full py-2 px-4 rounded-lg font-medium transition-colors ${
+                    className={`w-full py-3 px-6 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center group mb-6 ${
                       plan.popular
-                        ? 'bg-purple-600 text-white hover:bg-purple-700'
-                        : 'bg-gray-800 text-white hover:bg-gray-700'
+                        ? 'bg-gradient-to-r from-purple-600 to-purple-700 text-white hover:from-purple-700 hover:to-purple-800'
+                        : 'bg-gradient-to-r from-gray-800 to-gray-900 text-white hover:from-gray-900 hover:to-black'
                     }`}
                   >
-                    Get Started
+                    Get Started Now
+                    <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" size={20} />
                   </button>
 
-                  <div className="mt-6">
-                    <h4 className="font-medium text-gray-900 mb-3">Features</h4>
+                  <div>
+                    <h4 className="font-medium text-gray-900 mb-3">Everything Included:</h4>
                     <ul className="space-y-2">
                       {plan.features.map((feature, idx) => (
                         <li key={idx} className="flex items-start">
@@ -406,6 +446,24 @@ const Home = () => {
                           <span className={`text-sm ${feature.included ? 'text-gray-700' : 'text-gray-400'}`}>
                             {feature.name}
                           </span>
+                          {feature.hasInfo && (
+                            <div 
+                              className="relative ml-1"
+                              onMouseEnter={() => setHoveredEmail(`${plan.id}-${idx}`)}
+                              onMouseLeave={() => setHoveredEmail(null)}
+                            >
+                              <Info className="text-blue-600 cursor-help flex-shrink-0" size={14} />
+                              {hoveredEmail === `${plan.id}-${idx}` && (
+                                <div className="absolute left-0 bottom-full mb-2 w-56 bg-gray-900 text-white text-xs rounded-lg px-3 py-2 shadow-xl z-10">
+                                  <div className="font-semibold mb-1">📧 Email Storage: 1GB per account</div>
+                                  <div className="text-gray-300">Need more storage? Contact us for custom pricing.</div>
+                                  <div className="absolute top-full left-4 -mt-1">
+                                    <div className="border-4 border-transparent border-t-gray-900"></div>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          )}
                         </li>
                       ))}
                     </ul>
