@@ -1,18 +1,27 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { HashLink } from 'react-router-hash-link';
 import { Mail, Globe } from 'lucide-react';
 
 const Maple = ({ size = 24, className = "" }) => (
-  <i className={`fab fa-canadian-maple-leaf ${className}`} style={{fontSize: size}}></i>
+  <i className={`fab fa-canadian-maple-leaf ${className}`} style={{ fontSize: size }}></i>
 );
 
 const Footer = () => {
   const currentYear = new Date().getFullYear();
 
+  // Smooth scroll offset to avoid header overlap
+  const HEADER_OFFSET = 72;
+  const scrollWithOffset = (el) => {
+    const y = el.getBoundingClientRect().top + window.pageYOffset - HEADER_OFFSET;
+    window.scrollTo({ top: y, behavior: 'smooth' });
+  };
+
   return (
     <footer className="bg-gray-900 text-white py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         <div className="grid md:grid-cols-4 gap-8 mb-8">
+          {/* Brand */}
           <div>
             <div className="flex items-center mb-4">
               <Maple size={28} className="text-red-500 mr-2" />
@@ -28,25 +37,28 @@ const Footer = () => {
             </div>
           </div>
 
+          {/* Services */}
           <div>
             <h4 className="font-semibold mb-4 text-lg">Services</h4>
             <ul className="space-y-2 text-gray-400">
-              <li><a href="#services" className="hover:text-white transition">Website Development</a></li>
-              <li><a href="#services" className="hover:text-white transition">Web Hosting</a></li>
-              <li><a href="#services" className="hover:text-white transition">Business Email</a></li>
-              <li><a href="#services" className="hover:text-white transition">Maintenance</a></li>
+              <li><HashLink smooth to="/#services" scroll={scrollWithOffset} className="hover:text-white transition">Website Development</HashLink></li>
+              <li><HashLink smooth to="/#services" scroll={scrollWithOffset} className="hover:text-white transition">Web Hosting</HashLink></li>
+              <li><HashLink smooth to="/#services" scroll={scrollWithOffset} className="hover:text-white transition">Business Email</HashLink></li>
+              <li><HashLink smooth to="/#services" scroll={scrollWithOffset} className="hover:text-white transition">Maintenance</HashLink></li>
             </ul>
           </div>
 
+          {/* Company */}
           <div>
             <h4 className="font-semibold mb-4 text-lg">Company</h4>
             <ul className="space-y-2 text-gray-400">
               <li><Link to="/pricing" className="hover:text-white transition">Pricing</Link></li>
-              <li><a href="#comparison" className="hover:text-white transition">Compare</a></li>
-              <li><a href="#contact" className="hover:text-white transition">Contact Us</a></li>
+              <li><HashLink smooth to="/#comparison" scroll={scrollWithOffset} className="hover:text-white transition">Compare</HashLink></li>
+              <li><HashLink smooth to="/#contact" scroll={scrollWithOffset} className="hover:text-white transition">Contact Us</HashLink></li>
             </ul>
           </div>
 
+          {/* Contact */}
           <div>
             <h4 className="font-semibold mb-4 text-lg">Contact</h4>
             <ul className="space-y-3 text-gray-400">
@@ -68,6 +80,7 @@ const Footer = () => {
           </div>
         </div>
 
+        {/* Bottom */}
         <div className="border-t border-gray-800 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-gray-400 text-sm mb-4 md:mb-0">

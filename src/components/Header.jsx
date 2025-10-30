@@ -14,7 +14,7 @@ const navItems = [
   { name: 'Pricing', to: '/pricing' },
   { name: 'Compare', to: '/#comparison', hash: true },
   { name: 'About', to: '/about' },
-  { name: 'Contact', to: '/#contact', hash: true },
+  { name: 'Contact', to: '/contact', },
   { name: 'Support', to: '/support' },
 ];
 
